@@ -8,6 +8,7 @@ interface Doctor {
   specialty: string;
   city: string;
 }
+// чистити виделкою
 
 const cities = ["City 1", "City 2", "City 3"]; // Список городов
 
@@ -37,14 +38,17 @@ const doctors: Doctor[] = [
   },
 ];
 
+// чистити виделкою
+
 const Form: React.FC = () => {
   const [name, setName] = useState("");
   const [birthday, setBirthday] = useState("");
   const [sex, setSex] = useState("");
+  // чистити виделкою
   const [city, setCity] = useState("");
   const [specialty, setSpecialty] = useState("");
   const [doctor, setDoctor] = useState("");
-
+  // чистити виделкою
   const [email, setEmail] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
   const [errorNameMessage, setErrorNameMessage] = useState("");
@@ -152,7 +156,6 @@ const Form: React.FC = () => {
             className="form-input"
             value={birthday}
             onChange={handleBirthdayChange}
-            placeholder="dd/mm/yyyy"
             required
           />
           {errorDateMessage && (
