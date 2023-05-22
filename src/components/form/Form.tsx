@@ -1,127 +1,74 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import {
+  fetchCityesData,
+  fetchDoctorsSpecialtyData,
+  fetchDoctorsNamesData,
+} from "./form.gateway";
+import {
+  City,
+  DoctorSpecialty,
+  DoctorsNames,
+  FormDate,
+  ErrorMessage,
+} from "../../types";
+import { nameValidation, birthdayValidation } from "../../helper";
+
 import "./form.scss";
 
-interface Doctor {
-  id: number;
-  name: string;
-  experience: number;
-  specialty: string;
-  city: string;
-}
-// чистити виделкою
-
-const cities = ["City 1", "City 2", "City 3"]; // Список городов
-
-const specialties = ["Specialty 1", "Specialty 2", "Specialty 3"]; // Список специальностей
-
-const doctors: Doctor[] = [
-  {
-    id: 1,
-    name: "Doctor 1",
-    experience: 5,
-    specialty: "Specialty 1",
-    city: "City 1",
-  },
-  {
-    id: 2,
-    name: "Doctor 2",
-    experience: 8,
-    specialty: "Specialty 2",
-    city: "City 2",
-  },
-  {
-    id: 3,
-    name: "Doctor 3",
-    experience: 3,
-    specialty: "Specialty 3",
-    city: "City 3",
-  },
-];
-
-// чистити виделкою
-
 const Form: React.FC = () => {
-  const [name, setName] = useState("");
-  const [birthday, setBirthday] = useState("");
-  const [sex, setSex] = useState("");
-  // чистити виделкою
-  const [city, setCity] = useState("");
-  const [specialty, setSpecialty] = useState("");
-  const [doctor, setDoctor] = useState("");
-  // чистити виделкою
-  const [email, setEmail] = useState("");
-  const [mobileNumber, setMobileNumber] = useState("");
-  const [errorNameMessage, setErrorNameMessage] = useState("");
-  const [errorDateMessage, setErrorDateMessage] = useState("");
+  useEffect(() => {
+    fetchCityesData().then((data) => setCityArray(data));
+    fetchDoctorsSpecialtyData().then((data) => setspecialtyArray(data));
+    fetchDoctorsNamesData().then((data) => setNamesArray(data));
+  }, []);
 
-  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const inputValue = event.target.value;
-    const regex = /[0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+  const [formDate, setFormDate] = useState<FormDate>({
+    name: "",
+    age: 0,
+    sex: "",
+    city: "",
+    specialty: "",
+    doctor: "",
+    email: "",
+    mobileNumber: "",
+  });
 
-    regex.test(inputValue)
-      ? setErrorNameMessage("field is not valid")
-      : setErrorNameMessage("");
+  const [cityArray, setCityArray] = useState<City[]>([]);
+  const [specialtyArray, setspecialtyArray] = useState<DoctorSpecialty[]>([]);
+  const [namesArray, setNamesArray] = useState<DoctorsNames[]>([]);
 
-    setName(event.target.value);
-  };
+  const [errorMessage, setErrorDateMessage] = useState<ErrorMessage>({
+    nameError: "",
+    ageError: "",
+  });
 
-  const handleBirthdayChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    new Date(event.target.value) >= new Date()
-      ? setErrorDateMessage("field is not valid")
-      : setErrorDateMessage("");
-    setBirthday(event.target.value);
-  };
-
-  const handleSexChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSex(event.target.value);
-  };
-
-  const handleCityChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setCity(event.target.value);
-  };
-
-  const handleSpecialtyChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
+  const handleInputChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    setSpecialty(event.target.value);
-  };
+    const { id, value } = event.target;
 
-  const handleDoctorChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setDoctor(event.target.value);
-  };
+    if (id === "name") {
+      setErrorDateMessage((prevMessage: ErrorMessage) => ({
+        ...prevMessage,
+        nameError: nameValidation(value) ? "" : "not valid field",
+      }));
+    }
+    if (id === "age") {
+      setErrorDateMessage((prevMessage: ErrorMessage) => ({
+        ...prevMessage,
+        ageError: birthdayValidation(value) ? "not valid field" : "",
+      }));
+    }
 
-  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(event.target.value);
-  };
-
-  const handleMobileNumberChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setMobileNumber(event.target.value);
+    setFormDate((prevFormDate) => ({
+      ...prevFormDate,
+      [id]: value,
+    }));
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    // Проверка обязательных полей
-    if (
-      name === "" ||
-      birthday === "" ||
-      sex === "" ||
-      city === "" ||
-      doctor === ""
-    ) {
-      console.log("Please fill in all required fields");
-      return;
-    }
-
-    // Валидация Email и Mobile Number (хотя бы одно поле должно быть заполнено)
-    if (email === "" && mobileNumber === "") {
-      console.log("Please provide either Email or Mobile Number");
-      return;
-    }
-
-    // Дополнительная логика отправки формы...
+    console.log(formDate);
     console.log("Form submitted");
   };
 
@@ -136,13 +83,13 @@ const Form: React.FC = () => {
             type="text"
             id="name"
             className="form-input"
-            value={name}
-            onChange={handleNameChange}
+            value={formDate.name}
+            onChange={handleInputChange}
             placeholder="Name"
             required
           />
-          {errorNameMessage && (
-            <div className="error-message">{errorNameMessage}</div>
+          {errorMessage.nameError && (
+            <div className="error-message">{errorMessage.nameError}</div>
           )}
         </div>
 
@@ -152,14 +99,14 @@ const Form: React.FC = () => {
           </label>
           <input
             type="date"
-            id="birthday"
+            id="age"
             className="form-input"
-            value={birthday}
-            onChange={handleBirthdayChange}
+            value={formDate.age}
+            onChange={handleInputChange}
             required
           />
-          {errorDateMessage && (
-            <div className="error-message">{errorDateMessage}</div>
+          {errorMessage.ageError && (
+            <div className="error-message">{errorMessage.ageError}</div>
           )}
         </div>
 
@@ -170,8 +117,8 @@ const Form: React.FC = () => {
           <select
             id="sex"
             className="form-select"
-            value={sex}
-            onChange={handleSexChange}
+            value={formDate.sex}
+            onChange={handleInputChange}
             required
           >
             <option value="">Select</option>
@@ -186,14 +133,14 @@ const Form: React.FC = () => {
           <select
             id="city"
             className="form-select"
-            value={city}
-            onChange={handleCityChange}
+            value={formDate.city}
+            onChange={handleInputChange}
             required
           >
             <option value="">Select</option>
-            {cities.map((city) => (
-              <option value={city} key={city}>
-                {city}
+            {cityArray.map((city) => (
+              <option value={city.id} key={city.id}>
+                {city.name}
               </option>
             ))}
           </select>
@@ -205,13 +152,13 @@ const Form: React.FC = () => {
           <select
             id="specialty"
             className="form-select"
-            value={specialty}
-            onChange={handleSpecialtyChange}
+            value={formDate.specialty}
+            onChange={handleInputChange}
           >
             <option value="">Select</option>
-            {specialties.map((specialty) => (
-              <option value={specialty} key={specialty}>
-                {specialty}
+            {specialtyArray.map((specialty) => (
+              <option value={specialty.id} key={specialty.id}>
+                {specialty.name}
               </option>
             ))}
           </select>
@@ -223,14 +170,14 @@ const Form: React.FC = () => {
           <select
             id="doctor"
             className="form-select"
-            value={doctor}
-            onChange={handleDoctorChange}
+            value={formDate.doctor}
+            onChange={handleInputChange}
             required
           >
             <option value="">Select</option>
-            {doctors.map((doctor) => (
-              <option value={doctor.name} key={doctor.id}>
-                {doctor.name} - {doctor.experience} years of experience
+            {namesArray.map((doctor) => (
+              <option value={doctor.id} key={doctor.id}>
+                {doctor.name}
               </option>
             ))}
           </select>
@@ -243,8 +190,8 @@ const Form: React.FC = () => {
             type="email"
             id="email"
             className="form-input"
-            value={email}
-            onChange={handleEmailChange}
+            value={formDate.email}
+            onChange={handleInputChange}
           />
         </div>
         <div className="form-group">
@@ -255,8 +202,8 @@ const Form: React.FC = () => {
             type="tel"
             id="mobileNumber"
             className="form-input"
-            value={mobileNumber}
-            onChange={handleMobileNumberChange}
+            value={formDate.mobileNumber}
+            onChange={handleInputChange}
           />
         </div>
         <button type="submit" className="form-button">
