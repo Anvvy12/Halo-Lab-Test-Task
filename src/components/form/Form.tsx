@@ -13,12 +13,6 @@ import {
 import "./form.scss";
 
 const Form: React.FC = () => {
-  useEffect(() => {
-    fetchCityes().then((data) => setCityArray(data));
-    fetchSpecialty().then((data) => setspecialtyArray(data));
-    fetchDoctors().then((data) => setNamesArray(data));
-  }, []);
-
   const [formDate, setFormDate] = useState<FormDate>({
     name: "",
     age: "",
@@ -30,6 +24,7 @@ const Form: React.FC = () => {
     mobileNumber: "",
   });
 
+  const [filteredNamesArray, setFilteredNamesArray] = useState<Names[]>([]);
   const [cityArray, setCityArray] = useState<City[]>([]);
   const [specialtyArray, setspecialtyArray] = useState<Specialty[]>([]);
   const [namesArray, setNamesArray] = useState<Names[]>([]);
@@ -40,6 +35,26 @@ const Form: React.FC = () => {
     emailError: "",
     contactsError: "",
   });
+
+  useEffect(() => {
+    fetchCityes().then((data) => setCityArray(data));
+    fetchSpecialty().then((data) => setspecialtyArray(data));
+    fetchDoctors().then((data) => {
+      setNamesArray(data);
+      setFilteredNamesArray(data);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (formDate.city) {
+      const filteredDoctors = namesArray.filter(
+        (doctor) => doctor.cityId === formDate.city
+      );
+      setFilteredNamesArray(filteredDoctors);
+    } else {
+      setFilteredNamesArray(namesArray);
+    }
+  }, [formDate.city, namesArray]);
 
   const handleInputChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -239,11 +254,13 @@ const Form: React.FC = () => {
             required
           >
             <option value="">Select</option>
-            {filterDoctorsByAge(namesArray, formDate.age).map((doctor) => (
-              <option value={doctor.id} key={doctor.id}>
-                {doctor.name}
-              </option>
-            ))}
+            {filterDoctorsByAge(filteredNamesArray, formDate.age).map(
+              (doctor) => (
+                <option value={doctor.id} key={doctor.id}>
+                  {doctor.name}
+                </option>
+              )
+            )}
           </select>
         </div>
 
