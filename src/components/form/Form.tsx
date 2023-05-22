@@ -226,18 +226,20 @@ const Form: React.FC = () => {
             id="specialty"
             name="specialty"
             className="form-select"
-            value={
-              formDate.specialty ||
-              (selectedSpecialty ? selectedSpecialty.id : "")
-            }
+            value={formDate.specialty}
             onChange={handleInputChange}
           >
             <option value="">Select</option>
-            {specialtyArray.map((specialty) => (
-              <option value={specialty.id} key={specialty.id}>
-                {specialty.name}
-              </option>
-            ))}
+            {specialtyArray
+              .filter(
+                (specialty) =>
+                  specialty.params && specialty.params.gender === formDate.sex
+              )
+              .map((specialty) => (
+                <option value={specialty.id} key={specialty.id}>
+                  {specialty.name}
+                </option>
+              ))}
           </select>
         </div>
 
