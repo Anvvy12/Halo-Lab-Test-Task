@@ -112,6 +112,18 @@ const Form: React.FC = () => {
       : console.log("not OK");
   };
 
+  const selectedDoctor = namesArray.find(
+    (doctor) => doctor.id === formDate.doctor
+  );
+  const selectedSpecialty = selectedDoctor
+    ? specialtyArray.find(
+        (specialty) => specialty.id === selectedDoctor.specialityId
+      )
+    : null;
+  const selectedCity = selectedDoctor
+    ? cityArray.find((city) => city.id === selectedDoctor.cityId)
+    : null;
+
   return (
     <div className="form-container">
       <form className="form" onSubmit={handleSubmit}>
@@ -169,6 +181,7 @@ const Form: React.FC = () => {
             <option value="Female">Female</option>
           </select>
         </div>
+
         <div className="form-group">
           <label className="form-label" htmlFor="city">
             City:
@@ -177,7 +190,7 @@ const Form: React.FC = () => {
             id="city"
             name="city"
             className="form-select"
-            value={formDate.city}
+            value={formDate.city || (selectedCity ? selectedCity.id : "")}
             onChange={handleInputChange}
             required
           >
@@ -189,6 +202,7 @@ const Form: React.FC = () => {
             ))}
           </select>
         </div>
+
         <div className="form-group">
           <label className="form-label" htmlFor="specialty">
             Doctor Specialty:
@@ -197,7 +211,10 @@ const Form: React.FC = () => {
             id="specialty"
             name="specialty"
             className="form-select"
-            value={formDate.specialty}
+            value={
+              formDate.specialty ||
+              (selectedSpecialty ? selectedSpecialty.id : "")
+            }
             onChange={handleInputChange}
           >
             <option value="">Select</option>
@@ -208,6 +225,7 @@ const Form: React.FC = () => {
             ))}
           </select>
         </div>
+
         <div className="form-group">
           <label className="form-label" htmlFor="doctor">
             Doctor:
@@ -228,6 +246,7 @@ const Form: React.FC = () => {
             ))}
           </select>
         </div>
+
         <div className="form-group">
           <label className="form-label" htmlFor="email">
             Email:
@@ -241,6 +260,7 @@ const Form: React.FC = () => {
             onChange={handleInputChange}
           />
         </div>
+
         <div className="form-group">
           <label className="form-label" htmlFor="mobileNumber">
             Mobile Number:
@@ -259,9 +279,11 @@ const Form: React.FC = () => {
             </div>
           )}
         </div>
+
         {errorMessage.contactsError && (
           <div className="error-message">{errorMessage.contactsError}</div>
         )}
+
         <button type="submit" className="form-button">
           Submit
         </button>
