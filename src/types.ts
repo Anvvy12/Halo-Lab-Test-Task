@@ -2,7 +2,8 @@ export interface City {
   id: string;
   name: string;
 }
-export type DoctorSpecialty = {
+
+export type Specialty = {
   id: string;
   name: string;
   params?: {
@@ -12,7 +13,7 @@ export type DoctorSpecialty = {
   };
 };
 
-export type DoctorsNames = {
+export type Names = {
   id: string;
   name: string;
   surname: string;
@@ -20,6 +21,7 @@ export type DoctorsNames = {
   isPediatrician: boolean;
   cityId: string;
 };
+
 export type FormDate = {
   name: string;
   age: string;

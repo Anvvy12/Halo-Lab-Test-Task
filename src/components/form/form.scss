@@ -1,9 +1,7 @@
-/* Form.css */
-
 .form-container {
   max-width: 400px;
   margin: 0 auto;
-  overflow-x: hidden; /* Відключаємо горизонтальний скрол */
+  overflow-x: hidden;
 }
 
 .form {
@@ -62,18 +60,16 @@
   margin-top: 4px;
 }
 
-/* Optional: Add additional styles for responsiveness */
-
 @media (max-width: 480px) {
   .form-input,
   .form-select,
   .form-button {
     font-size: 16px;
-    width: 100%; /* Забезпечуємо горизонтальний розмір на малих екранах */
-  }
+    width: 100%;
 
-  .form-container {
-    max-width: 100%;
-    padding: 0 16px; /* Забезпечуємо проміжок по боках на малих екранах */
+    .form-container {
+      max-width: 100%;
+      padding: 0 16px;
+    }
   }
 }

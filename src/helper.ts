@@ -1,8 +1,8 @@
-import { ErrorMessage } from "./types";
+import { ErrorMessage, Names } from "./types";
 
 export const nameValidation = (name: string) => {
   const regex = /^[a-zA-Z]+$/;
-  return regex.test(name);
+  return name === "" ? true : regex.test(name);
 };
 
 export const birthdayValidation = (value: string) => {
@@ -30,6 +30,16 @@ export const phoneValidation = (phoneNumber: string) => {
   return phoneNumber === "" ? true : regex.test(phoneNumber);
 };
 
-export const isForValid = (errorObject: ErrorMessage) => {
+export const isFormValid = (errorObject: ErrorMessage) => {
   return Object.values(errorObject).every((value) => value === "");
+};
+
+export const filterDoctorsByAge = (doctors: Names[], age: string) => {
+  if (age) {
+    const isAdult = calculateAge(age) > 18;
+    return doctors.filter((doctor) =>
+      isAdult ? !doctor.isPediatrician : doctor.isPediatrician
+    );
+  }
+  return doctors;
 };

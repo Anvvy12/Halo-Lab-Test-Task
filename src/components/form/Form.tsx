@@ -1,30 +1,22 @@
-import React, { useState, useEffect } from "react";
-import {
-  fetchCityesData,
-  fetchDoctorsSpecialtyData,
-  fetchDoctorsNamesData,
-} from "./form.gateway";
-import {
-  City,
-  DoctorSpecialty,
-  DoctorsNames,
-  FormDate,
-  ErrorMessage,
-} from "../../types";
+/* eslint-disable array-callback-return */
+import React, { useState, useEffect, useCallback } from "react";
+import { fetchCityes, fetchSpecialty, fetchDoctors } from "./form.gateway";
+import { City, Specialty, Names, FormDate, ErrorMessage } from "../../types";
 import {
   nameValidation,
   birthdayValidation,
   phoneValidation,
-  isForValid,
+  isFormValid,
+  filterDoctorsByAge,
 } from "../../helper";
 
 import "./form.scss";
 
 const Form: React.FC = () => {
   useEffect(() => {
-    fetchCityesData().then((data) => setCityArray(data));
-    fetchDoctorsSpecialtyData().then((data) => setspecialtyArray(data));
-    fetchDoctorsNamesData().then((data) => setNamesArray(data));
+    fetchCityes().then((data) => setCityArray(data));
+    fetchSpecialty().then((data) => setspecialtyArray(data));
+    fetchDoctors().then((data) => setNamesArray(data));
   }, []);
 
   const [formDate, setFormDate] = useState<FormDate>({
@@ -39,9 +31,8 @@ const Form: React.FC = () => {
   });
 
   const [cityArray, setCityArray] = useState<City[]>([]);
-  const [specialtyArray, setspecialtyArray] = useState<DoctorSpecialty[]>([]);
-  const [namesArray, setNamesArray] = useState<DoctorsNames[]>([]);
-
+  const [specialtyArray, setspecialtyArray] = useState<Specialty[]>([]);
+  const [namesArray, setNamesArray] = useState<Names[]>([]);
   const [errorMessage, setErrorDateMessage] = useState<ErrorMessage>({
     nameError: "",
     ageError: "",
@@ -50,35 +41,58 @@ const Form: React.FC = () => {
     contactsError: "",
   });
 
-  const handleInputChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { id, value } = event.target;
+  const handleInputChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+      const { name, value } = event.target;
+      let errorMessageUpdates: Partial<ErrorMessage> = {};
 
-    if (id === "name") {
-      setErrorDateMessage((prevMessage: ErrorMessage) => ({
-        ...prevMessage,
-        nameError: nameValidation(value) ? "" : "Invalid name",
-      }));
-    }
-    if (id === "age") {
-      setErrorDateMessage((prevMessage: ErrorMessage) => ({
-        ...prevMessage,
-        ageError: birthdayValidation(value) ? "" : "invalid date of birth",
-      }));
-    }
-    if (id === "mobileNumber") {
-      setErrorDateMessage((prevMessage: ErrorMessage) => ({
-        ...prevMessage,
-        mobileNumberError: phoneValidation(value) ? "" : "Invalid phone number",
-      }));
-    }
+      switch (name) {
+        case "name":
+          errorMessageUpdates.nameError = nameValidation(value)
+            ? ""
+            : "Invalid name";
+          break;
+        case "age":
+          errorMessageUpdates.ageError = birthdayValidation(value)
+            ? ""
+            : "Invalid date of birth";
+          break;
+        case "mobileNumber":
+          errorMessageUpdates.mobileNumberError = phoneValidation(value)
+            ? ""
+            : "Invalid phone number";
+          break;
 
-    setFormDate((prevFormDate) => ({
-      ...prevFormDate,
-      [id]: value,
-    }));
-  };
+        case "doctor":
+          const selectedDoctor = namesArray.find(
+            (doctor) => doctor.id === value
+          );
+          if (selectedDoctor) {
+            setFormDate((prevFormDate) => ({
+              ...prevFormDate,
+              city: selectedDoctor.cityId,
+              specialty: selectedDoctor.specialityId,
+              doctor: value,
+            }));
+          }
+          console.log(formDate);
+          break;
+        default:
+          break;
+      }
+
+      setErrorDateMessage((prevMessage: ErrorMessage) => ({
+        ...prevMessage,
+        ...errorMessageUpdates,
+      }));
+
+      setFormDate((prevFormDate) => ({
+        ...prevFormDate,
+        [name]: value,
+      }));
+    },
+    []
+  );
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -93,7 +107,9 @@ const Form: React.FC = () => {
       ...errorMessage,
     }));
 
-    isForValid(errorMessage) ? console.log("form ok") : console.log("not OK");
+    isFormValid(errorMessage)
+      ? console.log("form ok", formDate)
+      : console.log("not OK");
   };
 
   return (
@@ -106,6 +122,7 @@ const Form: React.FC = () => {
           <input
             type="text"
             id="name"
+            name="name"
             className="form-input"
             value={formDate.name}
             onChange={handleInputChange}
@@ -124,6 +141,7 @@ const Form: React.FC = () => {
           <input
             type="date"
             id="age"
+            name="age"
             className="form-input"
             value={formDate.age}
             onChange={handleInputChange}
@@ -140,6 +158,7 @@ const Form: React.FC = () => {
           </label>
           <select
             id="sex"
+            name="sex"
             className="form-select"
             value={formDate.sex}
             onChange={handleInputChange}
@@ -156,6 +175,7 @@ const Form: React.FC = () => {
           </label>
           <select
             id="city"
+            name="city"
             className="form-select"
             value={formDate.city}
             onChange={handleInputChange}
@@ -175,6 +195,7 @@ const Form: React.FC = () => {
           </label>
           <select
             id="specialty"
+            name="specialty"
             className="form-select"
             value={formDate.specialty}
             onChange={handleInputChange}
@@ -193,13 +214,14 @@ const Form: React.FC = () => {
           </label>
           <select
             id="doctor"
+            name="doctor"
             className="form-select"
             value={formDate.doctor}
             onChange={handleInputChange}
             required
           >
             <option value="">Select</option>
-            {namesArray.map((doctor) => (
+            {filterDoctorsByAge(namesArray, formDate.age).map((doctor) => (
               <option value={doctor.id} key={doctor.id}>
                 {doctor.name}
               </option>
@@ -213,6 +235,7 @@ const Form: React.FC = () => {
           <input
             type="email"
             id="email"
+            name="email"
             className="form-input"
             value={formDate.email}
             onChange={handleInputChange}
@@ -225,6 +248,7 @@ const Form: React.FC = () => {
           <input
             type="tel"
             id="mobileNumber"
+            name="mobileNumber"
             className="form-input"
             value={formDate.mobileNumber}
             onChange={handleInputChange}
