@@ -22,7 +22,7 @@ export type DoctorsNames = {
 };
 export type FormDate = {
   name: string;
-  age: number;
+  age: string;
   sex: string;
   city: string;
   specialty: string;
@@ -34,4 +34,7 @@ export type FormDate = {
 export type ErrorMessage = {
   nameError: string;
   ageError: string;
+  mobileNumberError: string;
+  emailError: string;
+  contactsError: string;
 };

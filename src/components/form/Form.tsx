@@ -11,7 +11,12 @@ import {
   FormDate,
   ErrorMessage,
 } from "../../types";
-import { nameValidation, birthdayValidation } from "../../helper";
+import {
+  nameValidation,
+  birthdayValidation,
+  phoneValidation,
+  isForValid,
+} from "../../helper";
 
 import "./form.scss";
 
@@ -24,7 +29,7 @@ const Form: React.FC = () => {
 
   const [formDate, setFormDate] = useState<FormDate>({
     name: "",
-    age: 0,
+    age: "",
     sex: "",
     city: "",
     specialty: "",
@@ -40,6 +45,9 @@ const Form: React.FC = () => {
   const [errorMessage, setErrorDateMessage] = useState<ErrorMessage>({
     nameError: "",
     ageError: "",
+    mobileNumberError: "",
+    emailError: "",
+    contactsError: "",
   });
 
   const handleInputChange = (
@@ -50,13 +58,19 @@ const Form: React.FC = () => {
     if (id === "name") {
       setErrorDateMessage((prevMessage: ErrorMessage) => ({
         ...prevMessage,
-        nameError: nameValidation(value) ? "" : "not valid field",
+        nameError: nameValidation(value) ? "" : "Invalid name",
       }));
     }
     if (id === "age") {
       setErrorDateMessage((prevMessage: ErrorMessage) => ({
         ...prevMessage,
-        ageError: birthdayValidation(value) ? "not valid field" : "",
+        ageError: birthdayValidation(value) ? "" : "invalid date of birth",
+      }));
+    }
+    if (id === "mobileNumber") {
+      setErrorDateMessage((prevMessage: ErrorMessage) => ({
+        ...prevMessage,
+        mobileNumberError: phoneValidation(value) ? "" : "Invalid phone number",
       }));
     }
 
@@ -68,8 +82,18 @@ const Form: React.FC = () => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log(formDate);
-    console.log("Form submitted");
+
+    errorMessage.contactsError =
+      !formDate.mobileNumber && !formDate.email
+        ? "Please provide a phone number or an email"
+        : "";
+
+    setErrorDateMessage((prevMessage) => ({
+      ...prevMessage,
+      ...errorMessage,
+    }));
+
+    isForValid(errorMessage) ? console.log("form ok") : console.log("not OK");
   };
 
   return (
@@ -205,7 +229,15 @@ const Form: React.FC = () => {
             value={formDate.mobileNumber}
             onChange={handleInputChange}
           />
+          {errorMessage.mobileNumberError && (
+            <div className="error-message">
+              {errorMessage.mobileNumberError}
+            </div>
+          )}
         </div>
+        {errorMessage.contactsError && (
+          <div className="error-message">{errorMessage.contactsError}</div>
+        )}
         <button type="submit" className="form-button">
           Submit
         </button>
