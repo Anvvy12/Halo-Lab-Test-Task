@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/Halo-Lab-Test-Task/static/css/main.caec9f56.css",
+    "main.js": "/Halo-Lab-Test-Task/static/js/main.8b54a5ac.js",
+    "index.html": "/Halo-Lab-Test-Task/index.html",
+    "main.caec9f56.css.map": "/Halo-Lab-Test-Task/static/css/main.caec9f56.css.map",
+    "main.8b54a5ac.js.map": "/Halo-Lab-Test-Task/static/js/main.8b54a5ac.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.caec9f56.css",
+    "static/js/main.8b54a5ac.js"
+  ]
+}
