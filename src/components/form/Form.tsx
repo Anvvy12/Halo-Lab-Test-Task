@@ -27,6 +27,9 @@ const Form: React.FC = () => {
   const [filteredNamesArray, setFilteredNamesArray] = useState<Names[]>([]);
   const [cityArray, setCityArray] = useState<City[]>([]);
   const [specialtyArray, setspecialtyArray] = useState<Specialty[]>([]);
+  const [filteredSpecialties, setFilteredSpecialties] =
+    useState<Specialty[]>(specialtyArray);
+
   const [namesArray, setNamesArray] = useState<Names[]>([]);
   const [errorMessage, setErrorDateMessage] = useState<ErrorMessage>({
     nameError: "",
@@ -55,6 +58,24 @@ const Form: React.FC = () => {
       setFilteredNamesArray(namesArray);
     }
   }, [formDate.city, namesArray]);
+
+  const filterSpecialtiesByGender = (gender: string) => {
+    if (gender) {
+      const filtered = specialtyArray.filter((specialty) => {
+        if (specialty.params && specialty.params.gender) {
+          return specialty.params.gender.toLowerCase() === gender.toLowerCase();
+        }
+        return true;
+      });
+      setFilteredSpecialties(filtered);
+    } else {
+      setFilteredSpecialties(specialtyArray);
+    }
+  };
+
+  useEffect(() => {
+    filterSpecialtiesByGender(formDate.sex);
+  }, [formDate.sex]);
 
   const handleInputChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -129,11 +150,7 @@ const Form: React.FC = () => {
   const selectedDoctor = namesArray.find(
     (doctor) => doctor.id === formDate.doctor
   );
-  const selectedSpecialty = selectedDoctor
-    ? specialtyArray.find(
-        (specialty) => specialty.id === selectedDoctor.specialityId
-      )
-    : null;
+
   const selectedCity = selectedDoctor
     ? cityArray.find((city) => city.id === selectedDoctor.cityId)
     : null;
@@ -216,7 +233,6 @@ const Form: React.FC = () => {
             ))}
           </select>
         </div>
-
         <div className="form-group">
           <label className="form-label" htmlFor="specialty">
             Doctor Specialty:
@@ -225,11 +241,11 @@ const Form: React.FC = () => {
             id="specialty"
             name="specialty"
             className="form-select"
-            value={selectedSpecialty ? selectedSpecialty.id : ""}
+            value={formDate.specialty}
             onChange={handleInputChange}
           >
             <option value="">Select</option>
-            {specialtyArray.map((specialty) => (
+            {filteredSpecialties.map((specialty) => (
               <option value={specialty.id} key={specialty.id}>
                 {specialty.name}
               </option>
