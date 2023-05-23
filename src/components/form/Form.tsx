@@ -176,7 +176,6 @@ const Form: React.FC = () => {
             <div className="error-message">{errorMessage.nameError}</div>
           )}
         </div>
-
         <div className="form-group">
           <label className="form-label" htmlFor="birthday">
             Birthday Date:
@@ -194,7 +193,6 @@ const Form: React.FC = () => {
             <div className="error-message">{errorMessage.ageError}</div>
           )}
         </div>
-
         <div className="form-group">
           <label className="form-label" htmlFor="sex">
             Sex:
@@ -212,7 +210,6 @@ const Form: React.FC = () => {
             <option value="Female">Female</option>
           </select>
         </div>
-
         <div className="form-group">
           <label className="form-label" htmlFor="city">
             City:
@@ -252,7 +249,6 @@ const Form: React.FC = () => {
             ))}
           </select>
         </div>
-
         <div className="form-group">
           <label className="form-label" htmlFor="doctor">
             Doctor:
@@ -275,7 +271,6 @@ const Form: React.FC = () => {
             )}
           </select>
         </div>
-
         <div className="form-group">
           <label className="form-label" htmlFor="email">
             Email:
@@ -289,7 +284,6 @@ const Form: React.FC = () => {
             onChange={handleInputChange}
           />
         </div>
-
         <div className="form-group">
           <label className="form-label" htmlFor="mobileNumber">
             Mobile Number:
@@ -308,11 +302,9 @@ const Form: React.FC = () => {
             </div>
           )}
         </div>
-
         {errorMessage.contactsError && (
           <div className="error-message">{errorMessage.contactsError}</div>
         )}
-
         <button type="submit" className="form-button">
           Submit
         </button>
