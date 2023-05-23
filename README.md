@@ -23,4 +23,4 @@ This layout are full responsive
 
 ### Web page
 
--
+- https://anvvy12.github.io/Halo-Lab-Test-Task/
